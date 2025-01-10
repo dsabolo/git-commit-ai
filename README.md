@@ -19,6 +19,19 @@ A Git extension that uses OpenAI's GPT to automatically generate meaningful comm
 
 ## Installation
 
+### Quick Install (Recommended)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/dsabolo/git-commit-ai/main/install-remote.sh | bash
+```
+
+This will:
+- Install required dependencies
+- Set up the Git command
+- Create example configuration
+
+### Manual Installation
+
 1. Clone this repository:
 ```bash
 git clone https://github.com/dsabolo/git-commit-ai.git
