@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "git-commit-ai"
+version = "0.1.0"
+description = "AI-powered Git commit message generator"
+authors = ["Diego Sabolo <diego.sabolo@gmail.com>"]
+readme = "README.md"
+packages = [{include = "git_commit_ai"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+openai = "^1.0.0"
+gitpython = "^3.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
