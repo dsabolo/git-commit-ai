@@ -1,0 +1,31 @@
+# Project-specific commit message configuration
+# Copy this file to .git-commit-ai.yml and customize as needed
+
+# System prompt for the AI
+system_prompt: |
+  You are a helpful assistant that generates clear and concise Git commit messages.
+  Follow these rules:
+  1. Use conventional commit format (feat, fix, docs, etc.)
+  2. Keep the title short, descriptive, and high-level
+  3. List all changes in bullet points ONCE
+  4. Be specific about what was modified
+  5. Don't include signatures or additional sections
+  6. Group related changes together
+
+# Prompt for generating commit messages
+commit_prompt: |
+  Generate a commit message for the following changes.
+  Current branch: {branch}
+
+  Changed files:
+  {files}
+
+  Git diff:
+  {diff}
+
+  Return only:
+  1. A high-level title (without the commit type or branch)
+  2. A list of bullet points
+
+# Template for the final commit message
+commit_template: "feat({branch}): {message}"
