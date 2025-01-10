@@ -8,6 +8,7 @@ from string import Template
 import tempfile
 import re
 from prompt_config import COMMIT_PROMPT, COMMIT_TEMPLATE, SYSTEM_PROMPT
+import yaml
 
 def check_api_key():
     """Check if OpenAI API key is set"""
@@ -132,6 +133,47 @@ def get_changed_files():
         print(f"\n❌ Error getting changed files: {e.stderr}")
         sys.exit(1)
 
+def get_git_root():
+    """Get the root directory of the Git repository"""
+    try:
+        root = subprocess.run(['git', 'rev-parse', '--show-toplevel'],
+                            capture_output=True,
+                            text=True,
+                            check=True).stdout.strip()
+        return root
+    except subprocess.CalledProcessError:
+        return None
+
+def load_custom_prompts():
+    """Load custom prompts from .git-commit-ai.yml if it exists"""
+    try:
+        git_root = get_git_root()
+        if not git_root:
+            return None
+
+        config_file = os.path.join(git_root, '.git-commit-ai.yml')
+        if not os.path.exists(config_file):
+            return None
+
+        with open(config_file, 'r') as f:
+            config = yaml.safe_load(f)
+
+        if not isinstance(config, dict):
+            print("\n⚠️  Warning: Invalid config file format")
+            return None
+
+        required_fields = ['system_prompt', 'commit_prompt', 'commit_template']
+        if not all(field in config for field in required_fields):
+            print("\n⚠️  Warning: Missing required fields in config file")
+            return None
+
+        print("\n✨ Using project-specific commit configuration")
+        return config
+
+    except Exception as e:
+        print(f"\n⚠️  Warning: Error loading config file: {str(e)}")
+        return None
+
 def generate_commit_message(diff, changed_files, api_key):
     """Generate a commit message using OpenAI"""
     client = openai.OpenAI(api_key=api_key)
@@ -145,8 +187,16 @@ def generate_commit_message(diff, changed_files, api_key):
         if len(changed_files) > 20:
             changes_summary += f"\n... and {len(changed_files) - 20} more files"
         
+        # Load custom prompts if available
+        custom_prompts = load_custom_prompts()
+        
+        # Use custom or default prompts
+        system_prompt = custom_prompts['system_prompt'] if custom_prompts else SYSTEM_PROMPT
+        commit_prompt = custom_prompts['commit_prompt'] if custom_prompts else COMMIT_PROMPT
+        commit_template = custom_prompts['commit_template'] if custom_prompts else COMMIT_TEMPLATE
+        
         # Prepare the prompt with all changes
-        prompt = COMMIT_PROMPT.format(
+        prompt = commit_prompt.format(
             branch=branch,
             diff=diff,
             files=changes_summary
@@ -158,7 +208,7 @@ def generate_commit_message(diff, changed_files, api_key):
         response = client.chat.completions.create(
             model="gpt-3.5-turbo-16k",  # Use 16k model for larger contexts
             messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.7,
@@ -169,7 +219,7 @@ def generate_commit_message(diff, changed_files, api_key):
         message = response.choices[0].message.content.strip()
         
         # Format the message using the template
-        commit_message = COMMIT_TEMPLATE.format(
+        commit_message = commit_template.format(
             branch=branch,
             message=message
         )

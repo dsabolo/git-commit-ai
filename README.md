@@ -65,14 +65,76 @@ The tool will:
 
 ## Configuration
 
-The commit message format and AI prompts can be customized by editing `prompt_config.py`. The default format follows the conventional commit style:
+The commit message format and AI behavior can be customized per project by creating a `.git-commit-ai.yml` file in your repository root. The tool will automatically detect and use this configuration.
 
-```
-feat(branch): Descriptive title
+### Custom Configuration
 
-- Detailed change 1
-- Detailed change 2
+1. Copy the example configuration:
+```bash
+cp .git-commit-ai.yml.example .git-commit-ai.yml
 ```
+
+2. Edit the file to customize:
+- `system_prompt`: Instructions for the AI's behavior
+- `commit_prompt`: Template for generating the message
+- `commit_template`: Final commit message format
+
+Example configuration:
+```yaml
+# System prompt for the AI
+system_prompt: |
+  You are a helpful assistant that generates clear and concise Git commit messages.
+  Follow these rules:
+  1. Use conventional commit format (feat, fix, docs, etc.)
+  2. Keep the title short and descriptive
+  3. List all changes in bullet points
+  4. Be specific about modifications
+
+# Prompt for generating commit messages
+commit_prompt: |
+  Generate a commit message for the following changes.
+  Current branch: {branch}
+
+  Changed files:
+  {files}
+
+  Git diff:
+  {diff}
+
+  Return only:
+  1. A high-level title
+  2. A list of bullet points
+
+# Template for the final commit message
+commit_template: "feat({branch}): {message}"
+```
+
+### Available Variables
+
+The following variables are available in the prompts:
+- `{branch}`: Current Git branch name
+- `{files}`: List of changed files
+- `{diff}`: Git diff of changes
+
+### Default Behavior
+
+If no `.git-commit-ai.yml` is found, the tool will use its built-in defaults, which follow conventional commit format and best practices.
+
+## Usage
+
+1. Make some changes to your code
+
+2. Run:
+```bash
+git commit-ai
+```
+
+The tool will:
+- Stage any modified tracked files (like `git commit -am`)
+- Generate a commit message using AI
+- Open your default Git editor to review/edit the message
+- Create the commit when you save and exit
+- Cancel the commit if you exit without saving
 
 ## Uninstallation
 
