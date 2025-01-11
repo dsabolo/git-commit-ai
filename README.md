@@ -25,21 +25,20 @@ Supported platforms:
 ### Quick Install (Recommended)
 
 ```bash
-# Install git-commit-ai (requires sudo for system-wide installation)
-curl -fsSL https://raw.githubusercontent.com/dsabolo/git-commit-ai/main/install-remote.sh | sudo bash
+# Download and run installer
+curl -fsSL https://raw.githubusercontent.com/dsabolo/git-commit-ai/main/install-remote.sh | bash
 
-# Set your OpenAI API key
+# Set your OpenAI API key (replace with your actual key)
 export OPENAI_API_KEY='your-api-key-here'
 
-# Add to your shell config (~/.bashrc or ~/.zshrc) for permanent use:
+# Add to your shell config for permanent use:
 echo 'export OPENAI_API_KEY="your-api-key-here"' >> ~/.bashrc  # or ~/.zshrc
 source ~/.bashrc  # or ~/.zshrc
 ```
 
 The installer will:
-- Install required Python packages (openai, gitpython, pyyaml)
+- Install Python dependencies in your user space
 - Set up the Git command
-- Configure system paths
 - Create example configuration
 
 ### Manual Installation
@@ -52,7 +51,7 @@ cd git-commit-ai
 
 2. Run the installer:
 ```bash
-sudo bash install.sh
+bash install.sh
 ```
 
 3. Set your OpenAI API key:
@@ -128,8 +127,8 @@ feat(auth): Add user authentication system
 ## Uninstallation
 
 ```bash
-# Run the uninstaller with sudo
-sudo ./uninstall.sh
+# Run the uninstaller
+./uninstall.sh
 ```
 
 ## Contributing

@@ -43,11 +43,9 @@ fi
 if [[ "$OSTYPE" == "darwin"* ]]; then
     # macOS
     INSTALL_DIR="/usr/local"
-    PYTHON_SITE_PACKAGES="$INSTALL_DIR/lib/python$(python3 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')/site-packages"
 else
     # Linux
     INSTALL_DIR="/usr"
-    PYTHON_SITE_PACKAGES="/usr/lib/python3/dist-packages"
 fi
 
 # Create temporary directory
@@ -60,10 +58,10 @@ echo -e "${GREEN}Downloading latest version...${NC}"
 git clone --depth 1 https://github.com/dsabolo/git-commit-ai.git
 cd git-commit-ai
 
-# Install dependencies system-wide
+# Install dependencies for current user
 echo -e "${GREEN}Installing dependencies...${NC}"
-sudo $PIP_CMD install --upgrade pip
-sudo $PIP_CMD install --target="$PYTHON_SITE_PACKAGES" openai gitpython pyyaml
+$PIP_CMD install --user --upgrade pip
+$PIP_CMD install --user openai gitpython pyyaml
 
 # Create installation directories
 sudo mkdir -p "$INSTALL_DIR/lib/git-commit-ai"
@@ -78,6 +76,9 @@ echo -e "${GREEN}Creating Git command...${NC}"
 cat > git-commit-ai-cmd << EOL
 #!/bin/bash
 INSTALL_DIR="$INSTALL_DIR"
+
+# Add user's Python packages to PYTHONPATH
+export PYTHONPATH="\$HOME/.local/lib/python\$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')/site-packages:\$PYTHONPATH"
 
 # Execute the script with system Python
 exec python3 "\$INSTALL_DIR/lib/git-commit-ai/git-commit-ai" "\$@"
