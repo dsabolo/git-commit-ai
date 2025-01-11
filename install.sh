@@ -24,24 +24,21 @@ else
     exit 1
 fi
 
-# Determine shell config file
-SHELL_CONFIG="$HOME/.bashrc"
-if [[ "$SHELL" == */zsh ]]; then
-    SHELL_CONFIG="$HOME/.zshrc"
-fi
-
 # Determine OS-specific paths
 if [[ "$OSTYPE" == "darwin"* ]]; then
     # macOS
     INSTALL_DIR="/usr/local"
+    PYTHON_SITE_PACKAGES="$INSTALL_DIR/lib/python$(python3 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')/site-packages"
 else
     # Linux
     INSTALL_DIR="/usr"
+    PYTHON_SITE_PACKAGES="/usr/lib/python3/dist-packages"
 fi
 
-# Install dependencies globally
+# Install dependencies system-wide
 echo -e "${GREEN}Installing dependencies...${NC}"
-$PIP_CMD install openai gitpython pyyaml
+sudo $PIP_CMD install --upgrade pip
+sudo $PIP_CMD install --target="$PYTHON_SITE_PACKAGES" openai gitpython pyyaml
 
 # Create installation directories
 sudo mkdir -p "$INSTALL_DIR/lib/git-commit-ai"
@@ -53,31 +50,19 @@ sudo cp -r "$SCRIPT_DIR"/* "$INSTALL_DIR/lib/git-commit-ai/"
 
 # Create Git command wrapper
 echo -e "${GREEN}Creating Git command...${NC}"
-cat > git-commit-ai-cmd << 'EOL'
+cat > git-commit-ai-cmd << EOL
 #!/bin/bash
-INSTALL_DIR="$(dirname $(dirname $(readlink -f $0)))"
+INSTALL_DIR="$INSTALL_DIR"
 
-# Ensure Python can find the installed packages
-export PYTHONPATH="$INSTALL_DIR/lib/git-commit-ai:$PYTHONPATH"
-
-# Execute the script
-exec python3 "$INSTALL_DIR/lib/git-commit-ai/git-commit-ai" "$@"
+# Execute the script with system Python
+exec python3 "\$INSTALL_DIR/lib/git-commit-ai/git-commit-ai" "\$@"
 EOL
 
 sudo mv git-commit-ai-cmd "$INSTALL_DIR/bin/git-commit-ai"
 sudo chmod +x "$INSTALL_DIR/bin/git-commit-ai"
-
-# Add Git commands directory to PATH if needed
-if [[ ":$PATH:" != *":$INSTALL_DIR/bin:"* ]]; then
-    echo -e "${YELLOW}Adding Git commands directory to PATH...${NC}"
-    echo "export PATH=\"$INSTALL_DIR/bin:\$PATH\"" >> "$SHELL_CONFIG"
-    export PATH="$INSTALL_DIR/bin:$PATH"
-fi
 
 echo -e "${GREEN}Installation complete!${NC}"
 echo -e "${YELLOW}You can now use 'git commit-ai' to create commits with AI-generated messages${NC}"
 
 echo -e "\n${YELLOW}Don't forget to set your OpenAI API key:${NC}"
 echo -e "export OPENAI_API_KEY='your-api-key-here'"
-echo -e "\nAdd it to your shell config for permanent use:"
-echo -e "echo 'export OPENAI_API_KEY=\"your-api-key-here\"' >> $SHELL_CONFIG"

@@ -25,19 +25,22 @@ Supported platforms:
 ### Quick Install (Recommended)
 
 ```bash
-# Install git-commit-ai
-curl -fsSL https://raw.githubusercontent.com/dsabolo/git-commit-ai/main/install-remote.sh | bash
+# Install git-commit-ai (requires sudo for system-wide installation)
+curl -fsSL https://raw.githubusercontent.com/dsabolo/git-commit-ai/main/install-remote.sh | sudo bash
 
-# Open a new terminal or reload your shell configuration:
-source ~/.bashrc  # or ~/.zshrc if using zsh
+# Set your OpenAI API key
+export OPENAI_API_KEY='your-api-key-here'
+
+# Add to your shell config (~/.bashrc or ~/.zshrc) for permanent use:
+echo 'export OPENAI_API_KEY="your-api-key-here"' >> ~/.bashrc  # or ~/.zshrc
+source ~/.bashrc  # or ~/.zshrc
 ```
 
 The installer will:
-- Check and install required dependencies
+- Install required Python packages (openai, gitpython, pyyaml)
 - Set up the Git command
-- Configure your PATH
+- Configure system paths
 - Create example configuration
-- Guide you through API key setup
 
 ### Manual Installation
 
@@ -47,30 +50,19 @@ git clone https://github.com/dsabolo/git-commit-ai.git
 cd git-commit-ai
 ```
 
-2. Install dependencies:
+2. Run the installer:
 ```bash
-pip install poetry
-poetry install
+sudo bash install.sh
 ```
 
-3. Run the installer:
-```bash
-./install.sh
-```
-
-## Configuration
-
-### OpenAI API Key
-
-Set your OpenAI API key in your shell configuration:
-
+3. Set your OpenAI API key:
 ```bash
 # Add to ~/.bashrc or ~/.zshrc:
 export OPENAI_API_KEY='your-api-key-here'
-
-# Reload configuration:
-source ~/.bashrc  # or ~/.zshrc if using zsh
+source ~/.bashrc  # or ~/.zshrc
 ```
+
+## Configuration
 
 ### Custom Prompts
 
@@ -136,8 +128,8 @@ feat(auth): Add user authentication system
 ## Uninstallation
 
 ```bash
-# Run the uninstaller
-./uninstall.sh
+# Run the uninstaller with sudo
+sudo ./uninstall.sh
 ```
 
 ## Contributing
