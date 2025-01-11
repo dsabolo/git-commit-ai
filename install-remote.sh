@@ -63,10 +63,16 @@ poetry install
 echo -e "${GREEN}Running installer...${NC}"
 ./install.sh
 
-# Clean up
+# Copy finalization script to current directory
+cp finalize-install.sh ../finalize-install.sh
+chmod +x ../finalize-install.sh
+
+# Clean up but keep finalization script
 cd ..
+mv finalize-install.sh ~/finalize-install.sh
 rm -rf git-commit-ai
+cd ~
 
 echo -e "${GREEN}Almost done!${NC}"
 echo -e "${YELLOW}To complete the installation, run:${NC}"
-echo -e "source ./finalize-install.sh"
+echo -e "source ~/finalize-install.sh"

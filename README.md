@@ -32,7 +32,7 @@ curl -fsSL https://raw.githubusercontent.com/dsabolo/git-commit-ai/main/install-
 
 2. Complete the installation:
 ```bash
-source ./finalize-install.sh
+source ~/finalize-install.sh
 ```
 
 3. Set your OpenAI API key (the script will guide you through this):
