@@ -17,6 +17,10 @@ A Git extension that uses OpenAI's GPT to automatically generate meaningful comm
 2. Git
 3. OpenAI API key
 
+Supported platforms:
+- Linux (Ubuntu, Debian, etc.)
+- macOS
+
 ## Installation
 
 ### Quick Install (Recommended)
@@ -26,9 +30,14 @@ curl -fsSL https://raw.githubusercontent.com/dsabolo/git-commit-ai/main/install-
 ```
 
 This will:
-- Install required dependencies
+- Check and install required dependencies
 - Set up the Git command
 - Create example configuration
+- Guide you through API key setup
+
+If you're missing any dependencies, the installer will tell you how to install them:
+- On macOS: Using `brew` or Python's built-in tools
+- On Linux: Using your package manager
 
 ### Manual Installation
 

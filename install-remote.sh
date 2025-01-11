@@ -11,18 +11,31 @@ echo -e "${GREEN}Installing git-commit-ai...${NC}"
 # Check if git is installed
 if ! command -v git &> /dev/null; then
     echo -e "${RED}Error: git is not installed${NC}"
+    echo -e "Please install git first:"
+    echo -e "  - Mac: brew install git"
+    echo -e "  - Ubuntu/Debian: sudo apt install git"
     exit 1
 fi
 
-# Check if python3 is installed
+# Check for python3
 if ! command -v python3 &> /dev/null; then
     echo -e "${RED}Error: python3 is not installed${NC}"
+    echo -e "Please install Python 3 first:"
+    echo -e "  - Mac: brew install python3"
+    echo -e "  - Ubuntu/Debian: sudo apt install python3"
     exit 1
 fi
 
-# Check if pip is installed
-if ! command -v pip &> /dev/null; then
+# Check for pip/pip3
+if command -v pip3 &> /dev/null; then
+    PIP_CMD="pip3"
+elif command -v pip &> /dev/null; then
+    PIP_CMD="pip"
+else
     echo -e "${RED}Error: pip is not installed${NC}"
+    echo -e "Please install pip first:"
+    echo -e "  - Mac: python3 -m ensurepip"
+    echo -e "  - Ubuntu/Debian: sudo apt install python3-pip"
     exit 1
 fi
 
@@ -39,7 +52,7 @@ cd git-commit-ai
 # Install poetry if not installed
 if ! command -v poetry &> /dev/null; then
     echo -e "${YELLOW}Installing poetry...${NC}"
-    pip install poetry
+    $PIP_CMD install poetry
 fi
 
 # Install dependencies
@@ -57,6 +70,10 @@ rm -rf git-commit-ai
 echo -e "${GREEN}Installation complete!${NC}"
 echo -e "${YELLOW}Don't forget to set your OpenAI API key:${NC}"
 echo -e "export OPENAI_API_KEY='your-api-key-here'"
-echo -e "\nAdd it to your shell config (~/.bashrc, ~/.zshrc) for permanent use:"
-echo -e "echo 'export OPENAI_API_KEY=\"your-api-key-here\"' >> ~/.bashrc"
-echo -e "source ~/.bashrc"
+echo -e "\nAdd it to your shell config for permanent use:"
+echo -e "For bash (~/.bashrc):"
+echo -e "  echo 'export OPENAI_API_KEY=\"your-api-key-here\"' >> ~/.bashrc"
+echo -e "  source ~/.bashrc"
+echo -e "\nFor zsh (~/.zshrc):"
+echo -e "  echo 'export OPENAI_API_KEY=\"your-api-key-here\"' >> ~/.zshrc"
+echo -e "  source ~/.zshrc"
