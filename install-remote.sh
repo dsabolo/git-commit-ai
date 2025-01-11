@@ -69,4 +69,4 @@ rm -rf git-commit-ai
 
 echo -e "${GREEN}Almost done!${NC}"
 echo -e "${YELLOW}To complete the installation, run:${NC}"
-echo -e "./finalize-install.sh"
+echo -e "source ./finalize-install.sh"

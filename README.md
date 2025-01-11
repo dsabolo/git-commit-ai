@@ -30,9 +30,9 @@ Supported platforms:
 curl -fsSL https://raw.githubusercontent.com/dsabolo/git-commit-ai/main/install-remote.sh | bash
 ```
 
-2. Complete the installation (in a new terminal window):
+2. Complete the installation:
 ```bash
-./finalize-install.sh
+source ./finalize-install.sh
 ```
 
 3. Set your OpenAI API key (the script will guide you through this):
