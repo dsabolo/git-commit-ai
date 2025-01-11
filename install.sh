@@ -11,6 +11,19 @@ echo -e "${GREEN}Setting up git-commit-ai...${NC}"
 # Get the directory where the script is located
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+# Check for pip/pip3
+if command -v pip3 &> /dev/null; then
+    PIP_CMD="pip3"
+elif command -v pip &> /dev/null; then
+    PIP_CMD="pip"
+else
+    echo -e "${RED}Error: pip is not installed${NC}"
+    echo -e "Please install pip first:"
+    echo -e "  - Mac: python3 -m ensurepip"
+    echo -e "  - Ubuntu/Debian: sudo apt install python3-pip"
+    exit 1
+fi
+
 # Determine shell config file
 SHELL_CONFIG="$HOME/.bashrc"
 if [[ "$SHELL" == */zsh ]]; then
@@ -26,6 +39,10 @@ else
     INSTALL_DIR="/usr"
 fi
 
+# Install dependencies globally
+echo -e "${GREEN}Installing dependencies...${NC}"
+$PIP_CMD install openai gitpython pyyaml
+
 # Create installation directories
 sudo mkdir -p "$INSTALL_DIR/lib/git-commit-ai"
 sudo mkdir -p "$INSTALL_DIR/bin"
@@ -34,12 +51,17 @@ sudo mkdir -p "$INSTALL_DIR/bin"
 echo -e "${GREEN}Installing files...${NC}"
 sudo cp -r "$SCRIPT_DIR"/* "$INSTALL_DIR/lib/git-commit-ai/"
 
-# Create Git command
+# Create Git command wrapper
 echo -e "${GREEN}Creating Git command...${NC}"
 cat > git-commit-ai-cmd << 'EOL'
 #!/bin/bash
 INSTALL_DIR="$(dirname $(dirname $(readlink -f $0)))"
-exec "$INSTALL_DIR/lib/git-commit-ai/git-commit-ai" "$@"
+
+# Ensure Python can find the installed packages
+export PYTHONPATH="$INSTALL_DIR/lib/git-commit-ai:$PYTHONPATH"
+
+# Execute the script
+exec python3 "$INSTALL_DIR/lib/git-commit-ai/git-commit-ai" "$@"
 EOL
 
 sudo mv git-commit-ai-cmd "$INSTALL_DIR/bin/git-commit-ai"

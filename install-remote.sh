@@ -58,15 +58,9 @@ echo -e "${GREEN}Downloading latest version...${NC}"
 git clone --depth 1 https://github.com/dsabolo/git-commit-ai.git
 cd git-commit-ai
 
-# Install poetry if not installed
-if ! command -v poetry &> /dev/null; then
-    echo -e "${YELLOW}Installing poetry...${NC}"
-    $PIP_CMD install poetry
-fi
-
-# Install dependencies
+# Install dependencies globally
 echo -e "${GREEN}Installing dependencies...${NC}"
-poetry install
+$PIP_CMD install openai gitpython pyyaml
 
 # Create installation directories
 sudo mkdir -p "$INSTALL_DIR/lib/git-commit-ai"
@@ -76,12 +70,17 @@ sudo mkdir -p "$INSTALL_DIR/bin"
 echo -e "${GREEN}Installing files...${NC}"
 sudo cp -r * "$INSTALL_DIR/lib/git-commit-ai/"
 
-# Create Git command
+# Create Git command wrapper
 echo -e "${GREEN}Creating Git command...${NC}"
 cat > git-commit-ai-cmd << 'EOL'
 #!/bin/bash
 INSTALL_DIR="$(dirname $(dirname $(readlink -f $0)))"
-exec "$INSTALL_DIR/lib/git-commit-ai/git-commit-ai" "$@"
+
+# Ensure Python can find the installed packages
+export PYTHONPATH="$INSTALL_DIR/lib/git-commit-ai:$PYTHONPATH"
+
+# Execute the script
+exec python3 "$INSTALL_DIR/lib/git-commit-ai/git-commit-ai" "$@"
 EOL
 
 sudo mv git-commit-ai-cmd "$INSTALL_DIR/bin/git-commit-ai"
