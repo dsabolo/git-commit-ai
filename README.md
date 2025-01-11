@@ -1,21 +1,20 @@
-# Git AI Commit Message Generator
+# git-commit-ai 🤖
 
-A Git extension that uses OpenAI's GPT to automatically generate meaningful commit messages based on your changes.
+AI-powered Git commit message generator using OpenAI's GPT. It analyzes your staged changes and generates meaningful, conventional commit messages.
 
 ## Features
 
-- Automatically generates commit messages using AI
-- Shows both staged and unstaged changes
-- Includes branch name and structured changes list
-- Uses your default Git editor
-- Follows Git commit message best practices
-- Generates messages in conventional commit format
+- 🧠 Intelligent commit message generation
+- 📝 Conventional commit format
+- ⚙️ Project-specific customization
+- 🔄 Automatic staging of tracked changes
+- 🎨 Beautiful and descriptive commit messages
 
 ## Requirements
 
-1. Python 3.8 or later
-2. Git
-3. OpenAI API key
+- Python 3.8 or later
+- Git
+- OpenAI API key
 
 Supported platforms:
 - Linux (Ubuntu, Debian, etc.)
@@ -25,36 +24,20 @@ Supported platforms:
 
 ### Quick Install (Recommended)
 
-1. Install git-commit-ai:
 ```bash
+# Install git-commit-ai
 curl -fsSL https://raw.githubusercontent.com/dsabolo/git-commit-ai/main/install-remote.sh | bash
-```
 
-2. Open a new terminal or reload your shell configuration:
-```bash
-# If using bash:
-source ~/.bashrc
-
-# If using zsh:
-source ~/.zshrc
-```
-
-3. Set your OpenAI API key:
-```bash
-# Add to your shell config (~/.bashrc or ~/.zshrc):
-export OPENAI_API_KEY='your-api-key-here'
+# Open a new terminal or reload your shell configuration:
+source ~/.bashrc  # or ~/.zshrc if using zsh
 ```
 
 The installer will:
-- Install required dependencies (Python, pip, poetry)
+- Check and install required dependencies
 - Set up the Git command
+- Configure your PATH
 - Create example configuration
-- Add the command to your PATH
 - Guide you through API key setup
-
-Supported platforms:
-- Linux (Ubuntu, Debian, etc.)
-- macOS
 
 ### Manual Installation
 
@@ -75,50 +58,24 @@ poetry install
 ./install.sh
 ```
 
-4. Set your OpenAI API key:
-```bash
-export OPENAI_API_KEY='your-api-key-here'
-```
-
-To make the API key permanent, add it to your shell configuration file (~/.bashrc, ~/.zshrc, etc.):
-```bash
-echo 'export OPENAI_API_KEY="your-api-key-here"' >> ~/.bashrc
-source ~/.bashrc
-```
-
-## Usage
-
-1. Make some changes to your code
-
-2. Run:
-```bash
-git commit-ai
-```
-
-The tool will:
-- Stage any unstaged changes
-- Generate a commit message using AI
-- Open your default Git editor to review/edit the message
-- Create the commit when you save and exit
-- Cancel the commit if you exit without saving
-
 ## Configuration
 
-The commit message format and AI behavior can be customized per project by creating a `.git-commit-ai.yml` file in your repository root. The tool will automatically detect and use this configuration.
+### OpenAI API Key
 
-### Custom Configuration
+Set your OpenAI API key in your shell configuration:
 
-1. Copy the example configuration:
 ```bash
-cp .git-commit-ai.yml.example .git-commit-ai.yml
+# Add to ~/.bashrc or ~/.zshrc:
+export OPENAI_API_KEY='your-api-key-here'
+
+# Reload configuration:
+source ~/.bashrc  # or ~/.zshrc if using zsh
 ```
 
-2. Edit the file to customize:
-- `system_prompt`: Instructions for the AI's behavior
-- `commit_prompt`: Template for generating the message
-- `commit_template`: Final commit message format
+### Custom Prompts
 
-Example configuration:
+You can customize the commit message format by creating a `.git-commit-ai.yml` file in your repository root:
+
 ```yaml
 # System prompt for the AI
 system_prompt: |
@@ -148,17 +105,6 @@ commit_prompt: |
 commit_template: "feat({branch}): {message}"
 ```
 
-### Available Variables
-
-The following variables are available in the prompts:
-- `{branch}`: Current Git branch name
-- `{files}`: List of changed files
-- `{diff}`: Git diff of changes
-
-### Default Behavior
-
-If no `.git-commit-ai.yml` is found, the tool will use its built-in defaults, which follow conventional commit format and best practices.
-
 ## Usage
 
 1. Make some changes to your code
@@ -175,17 +121,29 @@ The tool will:
 - Create the commit when you save and exit
 - Cancel the commit if you exit without saving
 
-## Uninstallation
+## Example Output
 
-To uninstall:
-```bash
-./uninstall.sh
+```
+feat(auth): Add user authentication system
+
+- Create User model with email and password fields
+- Implement JWT token generation and validation
+- Add login and register endpoints
+- Set up password hashing with bcrypt
+- Add user authentication middleware
 ```
 
-## License
+## Uninstallation
 
-MIT
+```bash
+# Run the uninstaller
+./uninstall.sh
+```
 
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
