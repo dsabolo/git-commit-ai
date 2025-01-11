@@ -25,19 +25,31 @@ Supported platforms:
 
 ### Quick Install (Recommended)
 
+1. Download and install:
 ```bash
 curl -fsSL https://raw.githubusercontent.com/dsabolo/git-commit-ai/main/install-remote.sh | bash
 ```
 
-This will:
-- Check and install required dependencies
+2. Complete the installation (in a new terminal window):
+```bash
+./finalize-install.sh
+```
+
+3. Set your OpenAI API key (the script will guide you through this):
+```bash
+# Add to your shell config (~/.bashrc or ~/.zshrc):
+export OPENAI_API_KEY='your-api-key-here'
+```
+
+The installer will:
+- Install required dependencies (Python, pip, poetry)
 - Set up the Git command
 - Create example configuration
-- Guide you through API key setup
+- Add the command to your PATH
 
-If you're missing any dependencies, the installer will tell you how to install them:
-- On macOS: Using `brew` or Python's built-in tools
-- On Linux: Using your package manager
+Supported platforms:
+- Linux (Ubuntu, Debian, etc.)
+- macOS
 
 ### Manual Installation
 

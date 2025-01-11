@@ -39,23 +39,6 @@ else
     exit 1
 fi
 
-# Determine OS type and shell config
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    # macOS
-    if [[ "$SHELL" == */zsh ]]; then
-        SHELL_CONFIG="$HOME/.zshrc"
-    else
-        SHELL_CONFIG="$HOME/.bashrc"
-    fi
-else
-    # Linux
-    if [[ "$SHELL" == */zsh ]]; then
-        SHELL_CONFIG="$HOME/.zshrc"
-    else
-        SHELL_CONFIG="$HOME/.bashrc"
-    fi
-fi
-
 # Create temporary directory
 TEMP_DIR=$(mktemp -d)
 cd "$TEMP_DIR"
@@ -84,23 +67,6 @@ echo -e "${GREEN}Running installer...${NC}"
 cd ..
 rm -rf git-commit-ai
 
-# Source the shell config
-echo -e "${GREEN}Updating shell configuration...${NC}"
-if [ -f "$SHELL_CONFIG" ]; then
-    # Source the config file in the current shell
-    source "$SHELL_CONFIG" 2>/dev/null || . "$SHELL_CONFIG"
-    
-    # Also source it in parent shell by writing to temp file
-    TEMP_SOURCE=$(mktemp)
-    echo "source \"$SHELL_CONFIG\"" > "$TEMP_SOURCE"
-    echo "rm \"$TEMP_SOURCE\"" >> "$TEMP_SOURCE"
-    echo -e "${YELLOW}Shell config updated. Changes will take effect in new terminal windows.${NC}"
-fi
-
-echo -e "${GREEN}Installation complete!${NC}"
-echo -e "${YELLOW}You can now use 'git commit-ai' to create commits with AI-generated messages${NC}"
-
-echo -e "\n${YELLOW}Don't forget to set your OpenAI API key:${NC}"
-echo -e "export OPENAI_API_KEY='your-api-key-here'"
-echo -e "\nAdd it to your shell config for permanent use:"
-echo -e "echo 'export OPENAI_API_KEY=\"your-api-key-here\"' >> $SHELL_CONFIG"
+echo -e "${GREEN}Almost done!${NC}"
+echo -e "${YELLOW}To complete the installation, run:${NC}"
+echo -e "./finalize-install.sh"
