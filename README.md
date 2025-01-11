@@ -27,10 +27,14 @@ Supported platforms:
 ```bash
 # Download and run installer
 curl -fsSL https://raw.githubusercontent.com/dsabolo/git-commit-ai/main/install-remote.sh | bash
+```
 
+```bash
 # Set your OpenAI API key (replace with your actual key)
 export OPENAI_API_KEY='your-api-key-here'
+```
 
+```bash
 # Add to your shell config for permanent use:
 echo 'export OPENAI_API_KEY="your-api-key-here"' >> ~/.bashrc  # or ~/.zshrc
 source ~/.bashrc  # or ~/.zshrc
