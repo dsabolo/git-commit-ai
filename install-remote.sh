@@ -39,6 +39,12 @@ else
     exit 1
 fi
 
+# Determine shell config file
+SHELL_CONFIG="$HOME/.bashrc"
+if [[ "$SHELL" == */zsh ]]; then
+    SHELL_CONFIG="$HOME/.zshrc"
+fi
+
 # Create temporary directory
 TEMP_DIR=$(mktemp -d)
 cd "$TEMP_DIR"
@@ -63,16 +69,27 @@ poetry install
 echo -e "${GREEN}Running installer...${NC}"
 ./install.sh
 
-# Copy finalization script to current directory
-cp finalize-install.sh ../finalize-install.sh
-chmod +x ../finalize-install.sh
+# Update PATH if needed
+if [[ ":$PATH:" != *":/usr/local/bin:"* ]]; then
+    echo -e "${YELLOW}Adding /usr/local/bin to PATH...${NC}"
+    echo 'export PATH="/usr/local/bin:$PATH"' >> "$SHELL_CONFIG"
+fi
 
-# Clean up but keep finalization script
+# Clean up
 cd ..
-mv finalize-install.sh ~/finalize-install.sh
 rm -rf git-commit-ai
-cd ~
 
-echo -e "${GREEN}Almost done!${NC}"
-echo -e "${YELLOW}To complete the installation, run:${NC}"
-echo -e "source ~/finalize-install.sh"
+echo -e "${GREEN}Installation complete!${NC}"
+
+# Test installation
+if command -v git-commit-ai &> /dev/null; then
+    echo -e "${GREEN}✅ git-commit-ai installed successfully!${NC}"
+else
+    echo -e "${YELLOW}⚠️  Please open a new terminal or run:${NC}"
+    echo -e "source $SHELL_CONFIG"
+fi
+
+echo -e "\n${YELLOW}Don't forget to set your OpenAI API key:${NC}"
+echo -e "export OPENAI_API_KEY='your-api-key-here'"
+echo -e "\nAdd it to your shell config for permanent use:"
+echo -e "echo 'export OPENAI_API_KEY=\"your-api-key-here\"' >> $SHELL_CONFIG"
