@@ -45,6 +45,10 @@ if [[ "$SHELL" == */zsh ]]; then
     SHELL_CONFIG="$HOME/.zshrc"
 fi
 
+# Create Git commands directory if it doesn't exist
+GIT_COMMANDS_DIR="$HOME/.local/bin"
+mkdir -p "$GIT_COMMANDS_DIR"
+
 # Create temporary directory
 TEMP_DIR=$(mktemp -d)
 cd "$TEMP_DIR"
@@ -65,19 +69,22 @@ fi
 echo -e "${GREEN}Installing dependencies...${NC}"
 poetry install
 
-# Run the local installer
-echo -e "${GREEN}Running installer...${NC}"
-./install.sh
-
-# Update PATH if needed
-if [[ ":$PATH:" != *":/usr/local/bin:"* ]]; then
-    echo -e "${YELLOW}Adding /usr/local/bin to PATH...${NC}"
-    echo 'export PATH="/usr/local/bin:$PATH"' >> "$SHELL_CONFIG"
+# Create symlink for Git command
+echo -e "${GREEN}Creating Git command...${NC}"
+if [ -f "$GIT_COMMANDS_DIR/git-commit-ai" ]; then
+    echo -e "${YELLOW}Removing existing symlink...${NC}"
+    rm "$GIT_COMMANDS_DIR/git-commit-ai"
 fi
 
-# Clean up
-cd ..
-rm -rf git-commit-ai
+ln -s "$(pwd)/git-commit-ai" "$GIT_COMMANDS_DIR/git-commit-ai"
+chmod +x "$GIT_COMMANDS_DIR/git-commit-ai"
+
+# Add Git commands directory to PATH if needed
+if [[ ":$PATH:" != *":$GIT_COMMANDS_DIR:"* ]]; then
+    echo -e "${YELLOW}Adding Git commands directory to PATH...${NC}"
+    echo "export PATH=\"$GIT_COMMANDS_DIR:\$PATH\"" >> "$SHELL_CONFIG"
+    export PATH="$GIT_COMMANDS_DIR:$PATH"
+fi
 
 echo -e "${GREEN}Installation complete!${NC}"
 

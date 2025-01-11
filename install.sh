@@ -11,55 +11,31 @@ echo -e "${GREEN}Setting up git-commit-ai...${NC}"
 # Get the directory where the script is located
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# Determine OS type and shell config
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    # macOS
-    INSTALL_DIR="/usr/local/bin"
-    if [[ "$SHELL" == */zsh ]]; then
-        SHELL_CONFIG="$HOME/.zshrc"
-    else
-        SHELL_CONFIG="$HOME/.bashrc"
-    fi
-else
-    # Linux
-    INSTALL_DIR="/usr/local/bin"
-    if [[ "$SHELL" == */zsh ]]; then
-        SHELL_CONFIG="$HOME/.zshrc"
-    else
-        SHELL_CONFIG="$HOME/.bashrc"
-    fi
+# Determine shell config file
+SHELL_CONFIG="$HOME/.bashrc"
+if [[ "$SHELL" == */zsh ]]; then
+    SHELL_CONFIG="$HOME/.zshrc"
 fi
 
-# Create symlink
-echo -e "${GREEN}Creating command symlink...${NC}"
-if [ -f "$INSTALL_DIR/git-commit-ai" ]; then
+# Create Git command directory if it doesn't exist
+GIT_COMMANDS_DIR="$HOME/.local/bin"
+mkdir -p "$GIT_COMMANDS_DIR"
+
+# Create symlink for Git command
+echo -e "${GREEN}Creating Git command...${NC}"
+if [ -f "$GIT_COMMANDS_DIR/git-commit-ai" ]; then
     echo -e "${YELLOW}Removing existing symlink...${NC}"
-    sudo rm "$INSTALL_DIR/git-commit-ai"
+    rm "$GIT_COMMANDS_DIR/git-commit-ai"
 fi
 
-sudo ln -s "$SCRIPT_DIR/git-commit-ai" "$INSTALL_DIR/git-commit-ai"
-sudo chmod +x "$INSTALL_DIR/git-commit-ai"
+ln -s "$SCRIPT_DIR/git-commit-ai" "$GIT_COMMANDS_DIR/git-commit-ai"
+chmod +x "$GIT_COMMANDS_DIR/git-commit-ai"
 
-# Update PATH if needed
-if [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
-    echo -e "${YELLOW}Adding $INSTALL_DIR to PATH...${NC}"
-    echo "export PATH=\"\$PATH:$INSTALL_DIR\"" >> "$SHELL_CONFIG"
-fi
-
-# Source the shell config
-echo -e "${GREEN}Updating shell configuration...${NC}"
-if [ -f "$SHELL_CONFIG" ]; then
-    # Export PATH for current session
-    export PATH="$PATH:$INSTALL_DIR"
-    
-    # Source the config file in the current shell
-    source "$SHELL_CONFIG" 2>/dev/null || . "$SHELL_CONFIG"
-    
-    # Also source it in parent shell by writing to temp file
-    TEMP_SOURCE=$(mktemp)
-    echo "source \"$SHELL_CONFIG\"" > "$TEMP_SOURCE"
-    echo "rm \"$TEMP_SOURCE\"" >> "$TEMP_SOURCE"
-    echo -e "${YELLOW}Shell config updated. Changes will take effect in new terminal windows.${NC}"
+# Add Git commands directory to PATH if needed
+if [[ ":$PATH:" != *":$GIT_COMMANDS_DIR:"* ]]; then
+    echo -e "${YELLOW}Adding Git commands directory to PATH...${NC}"
+    echo "export PATH=\"$GIT_COMMANDS_DIR:\$PATH\"" >> "$SHELL_CONFIG"
+    export PATH="$GIT_COMMANDS_DIR:$PATH"
 fi
 
 echo -e "${GREEN}Installation complete!${NC}"
