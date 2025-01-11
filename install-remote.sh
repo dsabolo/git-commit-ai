@@ -39,15 +39,14 @@ else
     exit 1
 fi
 
-# Determine shell config file
-SHELL_CONFIG="$HOME/.bashrc"
-if [[ "$SHELL" == */zsh ]]; then
-    SHELL_CONFIG="$HOME/.zshrc"
+# Determine OS-specific paths
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # macOS
+    INSTALL_DIR="/usr/local"
+else
+    # Linux
+    INSTALL_DIR="/usr"
 fi
-
-# Create Git commands directory if it doesn't exist
-GIT_COMMANDS_DIR="$HOME/.local/bin"
-mkdir -p "$GIT_COMMANDS_DIR"
 
 # Create temporary directory
 TEMP_DIR=$(mktemp -d)
@@ -69,34 +68,31 @@ fi
 echo -e "${GREEN}Installing dependencies...${NC}"
 poetry install
 
-# Create symlink for Git command
+# Create installation directories
+sudo mkdir -p "$INSTALL_DIR/lib/git-commit-ai"
+sudo mkdir -p "$INSTALL_DIR/bin"
+
+# Copy files to installation directory
+echo -e "${GREEN}Installing files...${NC}"
+sudo cp -r * "$INSTALL_DIR/lib/git-commit-ai/"
+
+# Create Git command
 echo -e "${GREEN}Creating Git command...${NC}"
-if [ -f "$GIT_COMMANDS_DIR/git-commit-ai" ]; then
-    echo -e "${YELLOW}Removing existing symlink...${NC}"
-    rm "$GIT_COMMANDS_DIR/git-commit-ai"
-fi
+cat > git-commit-ai-cmd << 'EOL'
+#!/bin/bash
+INSTALL_DIR="$(dirname $(dirname $(readlink -f $0)))"
+exec "$INSTALL_DIR/lib/git-commit-ai/git-commit-ai" "$@"
+EOL
 
-ln -s "$(pwd)/git-commit-ai" "$GIT_COMMANDS_DIR/git-commit-ai"
-chmod +x "$GIT_COMMANDS_DIR/git-commit-ai"
+sudo mv git-commit-ai-cmd "$INSTALL_DIR/bin/git-commit-ai"
+sudo chmod +x "$INSTALL_DIR/bin/git-commit-ai"
 
-# Add Git commands directory to PATH if needed
-if [[ ":$PATH:" != *":$GIT_COMMANDS_DIR:"* ]]; then
-    echo -e "${YELLOW}Adding Git commands directory to PATH...${NC}"
-    echo "export PATH=\"$GIT_COMMANDS_DIR:\$PATH\"" >> "$SHELL_CONFIG"
-    export PATH="$GIT_COMMANDS_DIR:$PATH"
-fi
+# Clean up
+cd ..
+rm -rf git-commit-ai
 
 echo -e "${GREEN}Installation complete!${NC}"
-
-# Test installation
-if command -v git-commit-ai &> /dev/null; then
-    echo -e "${GREEN}✅ git-commit-ai installed successfully!${NC}"
-else
-    echo -e "${YELLOW}⚠️  Please open a new terminal or run:${NC}"
-    echo -e "source $SHELL_CONFIG"
-fi
+echo -e "${YELLOW}You can now use 'git commit-ai' to create commits with AI-generated messages${NC}"
 
 echo -e "\n${YELLOW}Don't forget to set your OpenAI API key:${NC}"
 echo -e "export OPENAI_API_KEY='your-api-key-here'"
-echo -e "\nAdd it to your shell config for permanent use:"
-echo -e "echo 'export OPENAI_API_KEY=\"your-api-key-here\"' >> $SHELL_CONFIG"
