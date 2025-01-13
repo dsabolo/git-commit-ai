@@ -202,8 +202,6 @@ def generate_commit_message(diff, changed_files, api_key):
             files=changes_summary
         )
         
-        print("\nGenerating commit message...")
-        
         # Call OpenAI API
         response = client.chat.completions.create(
             model="gpt-3.5-turbo-16k",  # Use 16k model for larger contexts
