@@ -370,11 +370,26 @@ def main():
     try:
         print("\nStarting git-commit-ai...")
         
+        # Check for changes first
+        print("\nChecking for changes...")
+        try:
+            # Check if there are any tracked changes to stage
+            status = subprocess.run(['git', 'status', '--porcelain'],
+                                capture_output=True,
+                                text=True,
+                                check=True)
+            
+            if not status.stdout:
+                print("\n❌ No changes to commit")
+                sys.exit(1)
+        except subprocess.CalledProcessError as e:
+            print(f"\n❌ Error checking changes: {e.stderr}")
+            sys.exit(1)
+        
         # Check for OpenAI API key
         api_key = check_api_key()
         
         # Stage changes if needed
-        print("\nChecking for changes...")
         stage_changes()
         
         # Get both staged and unstaged changes
