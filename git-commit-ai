@@ -362,17 +362,6 @@ def main():
     try:
         print("\nStarting git-commit-ai...")
         
-        # Check for changes first
-        print("\nChecking for changes...")
-        status = subprocess.run(['git', 'status', '--porcelain'],
-                            capture_output=True,
-                            text=True,
-                            check=True)
-        
-        if not status.stdout.strip():
-            print("\n❌ No changes to commit")
-            sys.exit(0)
-        
         # Check for OpenAI API key
         api_key = check_api_key()
         
@@ -383,6 +372,11 @@ def main():
         print("\nGetting diff of changes...")
         diff = get_git_diff()
         changed_files = get_changed_files()
+        
+        # Validate we have actual changes
+        if not diff.strip() or not changed_files:
+            print("\n❌ No changes to commit")
+            sys.exit(0)
         
         # Generate commit message
         print("\nGenerating commit message...")
